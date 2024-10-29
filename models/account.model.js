@@ -17,10 +17,10 @@ export const Account = sequelize.define('Account', {
   },
   password: {
     type: DataTypes.STRING,
-    unique: true,
     allowNull: false
   },
-  remember: {
-    type: DataTypes.BOOLEAN,
+  role: {
+    type: DataTypes.STRING,
+    defaultValue: 'admin'
   }
 });
