@@ -1,26 +1,23 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../DB.js';
 
-export const Account = sequelize.define('Account', {
+export const Image = sequelize.define('Image', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    allowNull: false,
   },
-  email: {
+  fileName: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
-    validate: {
-      isEmail: true
-    }
   },
-  password: {
+  originalName: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
   },
-  role: {
+  mimeType: {
     type: DataTypes.STRING,
-    defaultValue: 'user'
-  }
+    allowNull: false,
+  },
 });

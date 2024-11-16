@@ -10,50 +10,24 @@ import { ApiError } from '../exeptions/api-error.js';
 export const signUpAccount = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
     
-    await Account.create({
+    const existingUser = await Account.findOne({ where: { email } });
+    if (existingUser) return res.status(400).json({ error: "Username already exists." });
+    
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    
+    const savedUser = await Account.create({
       email,
       password: hashedPassword
     });
-    
-    res.status(201).json({ message: 'User created successfully' });
+    console.log(savedUser);
+    res.status(201).json({
+      message: "User registered successfully",
+      userId: savedUser.id,
+    });
   } catch (error) {
-    // Handle Sequelize unique constraint error
-    if (error.name === 'SequelizeUniqueConstraintError') {
-      const errorDetails = error.errors.map(err => ({
-        field: err.path,
-        message: `${err.path} "${err.value}" is already taken`
-      }));
-      
-      return res.status(409).json(
-        ApiError.Conflict(
-          'Email already exists',
-          errorDetails
-        )
-      );
-    }
-    
-    // Handle other validation errors
-    if (error.name === 'SequelizeValidationError') {
-      const errorDetails = error.errors.map(err => ({
-        field: err.path,
-        message: err.message
-      }));
-      
-      return res.status(400).json(
-        ApiError.BadRequest(
-          'Validation failed',
-          errorDetails
-        )
-      );
-    }
-    
-    // Handle unexpected errors
-    console.error('Signup error:', error);
-    return res.status(500).json(
-      ApiError(500, 'Internal server error')
-    );
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -62,44 +36,64 @@ export const signInAccount = async (req, res) => {
     const { email, password } = req.body;
     const user = await Account.findOne({ where: { email } });
     
-    if (!user || !await bcrypt.compare(password, user.password)) {
-      return res.status(401).json(ApiError.Unauthorized());
-    }
+    if (!user) return res.status(400).send("Invalid username or password.");
+    
+    const validPassword = await bcrypt.compare(password, user.password);
+    
+    if (!validPassword)
+      return res.status(400).send("Invalid username or password.");
     
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
     
     await Token.create({ token: refreshToken, userId: user.id });
     
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict' });
-    res.json({ accessToken });
+    res.status(200).json({
+      message: "User registered successfully",
+      accessToken: accessToken,
+      refreshToken: refreshToken
+    });
+    
   } catch (error) {
-    res.status(400).json(ApiError.BadRequest('An unexpected error occurred', [error.message]));
+    res.status(500).json(ApiError.BadRequest('Authentication failed', [error.message]));
   }
 };
 
 export const authRefreshToken = async (req, res) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) return res.sendStatus(401);
+    const { token: refreshToken } = req.body;
     
+    if (!refreshToken) {
+      return res.status(401).json({ error: 'No refresh token provided' });
+    }
+    
+    // Find the refresh token in the database
     const dbToken = await Token.findOne({ where: { token: refreshToken } });
-    if (!dbToken) return res.sendStatus(403);
+    if (!dbToken) return res.status(403).json({ error: 'Invalid refresh token' });
     
+    // Verify the refresh token
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
-      if (err) return res.sendStatus(403);
+      if (err) {
+        return res.status(403).json({ error: 'Invalid or expired refresh token' });
+      }
       
+      // Generate new tokens
       const newAccessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
       const newRefreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
       
-      await dbToken.destroy(); // Invalidate the old refresh token
+      // Invalidate the old refresh token and store the new one
+      await dbToken.destroy();
       await Token.create({ token: newRefreshToken, userId: user.id });
       
-      res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true, sameSite: 'Strict' });
-      res.json({ accessToken: newAccessToken });
+      res.status(200).json({
+        message: 'New accessToken & refreshToken provided',
+        accessToken: newAccessToken ,
+        refreshToken: newRefreshToken
+      });
     });
   } catch (err) {
-    res.status(403).json({ error: 'Invalid refresh token' });
+    console.error('Error during token refresh:', err);
+    res.status(500).json({ error: 'Failed to refresh token' });
   }
 };
 
@@ -113,5 +107,20 @@ export const authLogout = async (req, res) => {
     res.sendStatus(204);
   } catch (error) {
     res.status(403).json({ error: error.message });
+  }
+};
+
+export const getAccountInformation = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    const decoded = jwt.decode(token);
+    
+    const isExistUser = await Account.findByPk(decoded.id);
+    
+    res.status(200).json(isExistUser);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

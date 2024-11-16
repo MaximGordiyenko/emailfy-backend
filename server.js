@@ -7,15 +7,15 @@ import 'dotenv/config';
 import { corsOptions } from "./config/corsOptions.js";
 
 import { credentials } from "./middleware/credential.middleware.js";
-// import { ErrorMiddleware } from "./middleware/error.middleware.js";
 
 import { createDatabase, sequelize } from './DB.js';
 import { Token } from './models/token.model.js';
 import { Account } from './models/account.model.js';
+import { Image } from './models/image.model.js';
 
-import accountRoutes from './routes/account.js';
+import authRoutes from './routes/account.js';
 import dashboardRoutes from './routes/dashboard.js';
-
+import settingsRoutes from './routes/settings.js';
 
 const app = express();
 app.use(morgan('dev'));
@@ -31,14 +31,27 @@ app.use(express.json());
 
 app.use(cookieParser());
 
-app.use('/api', accountRoutes);
+app.use('/api', authRoutes);
 app.use('/api', dashboardRoutes);
-
-// app.use(ErrorMiddleware);
+app.use('/api', settingsRoutes);
 
 const setupAssociations = () => {
-  Account.hasMany(Token, { foreignKey: 'userId', as: 'tokens' });
-  Token.belongsTo(Account, { foreignKey: 'userId', as: 'account' });
+  Account.hasMany(Token, {
+    foreignKey: 'userId',
+    as: 'tokens'
+  });
+  Token.belongsTo(Account, {
+    foreignKey: 'userId',
+    as: 'account'
+  });
+  Account.hasOne(Image, {
+    foreignKey: 'accountId',
+    as: 'profileImage'
+  });
+  Image.belongsTo(Account, {
+    foreignKey: 'accountId',
+    as: 'account'
+  });
 };
 
 const initializeApp = async () => {
@@ -53,11 +66,11 @@ const initializeApp = async () => {
     // Setup associations
     setupAssociations();
     
-    // Sync all models
+    // Sync all models use { force: true } to drop and recreate tables
     await sequelize.sync({ alter: true });
     console.log('Database synced successfully.');
     
-    // Seed accounts
+    // Seed accounts if need mock data
     // await seedAccounts();
     
     const PORT = process.env.SERVER_PORT || 4001;
