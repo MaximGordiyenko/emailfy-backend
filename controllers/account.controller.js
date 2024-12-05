@@ -21,10 +21,10 @@ export const signUpAccount = async (req, res) => {
       email,
       password: hashedPassword
     });
-    console.log(savedUser);
+
     res.status(201).json({
       message: "User registered successfully",
-      userId: savedUser.id,
+      accountId: savedUser.id,
     });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
@@ -46,7 +46,7 @@ export const signInAccount = async (req, res) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
     
-    await Token.create({ token: refreshToken, userId: user.id });
+    await Token.create({ token: refreshToken, accountId: user.id });
     
     res.status(200).json({
       message: "User registered successfully",
@@ -83,7 +83,7 @@ export const authRefreshToken = async (req, res) => {
       
       // Invalidate the old refresh token and store the new one
       await dbToken.destroy();
-      await Token.create({ token: newRefreshToken, userId: user.id });
+      await Token.create({ token: newRefreshToken, accountId: user.id });
       
       res.status(200).json({
         message: 'New accessToken & refreshToken provided',

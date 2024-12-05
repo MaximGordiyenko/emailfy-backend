@@ -9,13 +9,18 @@ import { corsOptions } from "./config/corsOptions.js";
 import { credentials } from "./middleware/credential.middleware.js";
 
 import { createDatabase, sequelize } from './DB.js';
-import { Token } from './models/token.model.js';
-import { Account } from './models/account.model.js';
-import { Image } from './models/image.model.js';
+import { modelAssociations } from './models/modelAssociations.js';
 
 import authRoutes from './routes/account.js';
 import dashboardRoutes from './routes/dashboard.js';
 import settingsRoutes from './routes/settings.js';
+
+import {
+  generateRandomClientEmails,
+  generateRandomCampaigns,
+  generateRandomAccounts,
+  generateRandomSentEmailsStatistic
+} from './helpers/seeds.js';
 
 const app = express();
 app.use(morgan('dev'));
@@ -35,25 +40,6 @@ app.use('/api', authRoutes);
 app.use('/api', dashboardRoutes);
 app.use('/api', settingsRoutes);
 
-const setupAssociations = () => {
-  Account.hasMany(Token, {
-    foreignKey: 'userId',
-    as: 'tokens'
-  });
-  Token.belongsTo(Account, {
-    foreignKey: 'userId',
-    as: 'account'
-  });
-  Account.hasOne(Image, {
-    foreignKey: 'accountId',
-    as: 'profileImage'
-  });
-  Image.belongsTo(Account, {
-    foreignKey: 'accountId',
-    as: 'account'
-  });
-};
-
 const initializeApp = async () => {
   try {
     // Create database if it doesn't exist
@@ -64,14 +50,18 @@ const initializeApp = async () => {
     console.log('Database connection established successfully.');
     
     // Setup associations
-    setupAssociations();
+    modelAssociations()
     
     // Sync all models use { force: true } to drop and recreate tables
     await sequelize.sync({ alter: true });
     console.log('Database synced successfully.');
     
-    // Seed accounts if need mock data
-    // await seedAccounts();
+    // Seeds if need mock data
+    // await generateRandomAccounts(100);
+    
+    // await generateRandomClientEmails(2000);
+    // await generateRandomCampaigns(2000);
+    // await generateRandomSentEmailsStatistic();
     
     const PORT = process.env.SERVER_PORT || 4001;
     app.listen(PORT, () => {
@@ -83,4 +73,4 @@ const initializeApp = async () => {
   }
 };
 
-initializeApp();
+initializeApp().then(r => r);
