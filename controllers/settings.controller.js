@@ -5,6 +5,17 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { s3Client } from '../config/s3.js';
 import { Image } from '../models/image.model.js';
 import { Account } from '../models/account.model.js';
+import axios from 'axios';
+
+export const getCountries = async (req, res) => {
+  try {
+    const { data } = await axios.get(`https://restcountries.com/v2/all`);
+    console.log(data);
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 export const updateAccountInformation = async (req, res) => {
   try {

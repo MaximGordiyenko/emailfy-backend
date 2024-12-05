@@ -1,32 +1,32 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../DB.js';
-import { Account } from './account.model.js';
+import { EmailClient } from './email-client.model.js';
 
-export const Image = sequelize.define('Image', {
+export const Campaign = sequelize.define('Campaign', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
-    primaryKey: true,
+    primaryKey: true
   },
-  accountId: {
+  emailId: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     references: {
-      model: Account,
+      model: EmailClient,
       key: 'id'
     },
     onDelete: 'CASCADE'
   },
-  fileName: {
+  subject: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: false
   },
-  originalName: {
+  senderName: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: false
   },
-  mimeType: {
+  content: {
     type: DataTypes.STRING,
-    allowNull: false,
-  },
+    allowNull: false
+  }
 });

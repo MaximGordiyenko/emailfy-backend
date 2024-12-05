@@ -4,17 +4,17 @@ import { Account } from './account.model.js';
 
 export const Token = sequelize.define('Token', {
   id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
-    autoIncrement: true
   },
   token: {
     type: DataTypes.STRING,
     allowNull: false
   },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
+  accountId: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     references: {
       model: Account,
       key: 'id'

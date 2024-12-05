@@ -2,7 +2,7 @@ import { DataTypes } from 'sequelize';
 import { sequelize } from '../DB.js';
 import { Account } from './account.model.js';
 
-export const Image = sequelize.define('Image', {
+export const EmailClient = sequelize.define('EmailClient', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
@@ -17,16 +17,23 @@ export const Image = sequelize.define('Image', {
     },
     onDelete: 'CASCADE'
   },
-  fileName: {
+  email: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
   },
-  originalName: {
-    type: DataTypes.STRING,
-    allowNull: false,
+  unsubscribedReason: {
+    type: DataTypes.ENUM(
+      'Irrelevant content',
+      'Spam or unsolicited emails',
+      'Not interested',
+      'Too many emails',
+      'Poor quality content',
+    ),
+    allowNull: true, // Allow null for non-unsubscribed clients
   },
-  mimeType: {
-    type: DataTypes.STRING,
-    allowNull: false,
+  unsubscribed: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
   },
 });
