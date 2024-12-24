@@ -10,7 +10,6 @@ import axios from 'axios';
 export const getCountries = async (req, res) => {
   try {
     const { data } = await axios.get(`https://restcountries.com/v2/all`);
-    console.log(data);
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });

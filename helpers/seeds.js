@@ -52,11 +52,18 @@ export const generateRandomClientEmails = async (count = 10) => {
     
     // Define unsubscribe reasons and their corresponding probabilities
     const unsubscribeReasons = [
-      { reason: 'Irrelevant content', weight: 15 },   // 15%
+      { reason: 'Irrelevant content', weight: 15 }, // 15%
       { reason: 'Spam or unsolicited emails', weight: 3 }, //3%
       { reason: 'Not interested', weight: 40 }, // 50%
       { reason: 'Too many emails', weight: 25 }, // 25%
-      { reason: 'Poor quality content', weight: 12 }, // 2%
+      { reason: 'Poor quality content', weight: 12 } // 2%
+    ];
+    
+    const tagStatuses = [
+      { status: 'passive', weight: 30 }, // 30%
+      { status: 'active', weight: 50 }, // 50%
+      { status: 'block', weight: 5 }, // 5%
+      { status: 'wait', weight: 15 } // 15%
     ];
     
     // Generate random email data
@@ -64,6 +71,7 @@ export const generateRandomClientEmails = async (count = 10) => {
       const unsubscribed = faker.datatype.boolean();
       
       let unsubscribedReason = null;
+      let tagStatus = null;
       
       if (unsubscribed) {
         // Create an array where each reason appears based on its weight
@@ -77,6 +85,18 @@ export const generateRandomClientEmails = async (count = 10) => {
         // Randomly pick a reason based on the weighted distribution
         unsubscribedReason = faker.helpers.arrayElement(weightedReasons);
       }
+      
+      // Create an array where each status appears based on its weight
+      const weightedStatuses = [];
+      tagStatuses.forEach((entry) => {
+        for (let i = 0; i < entry.weight; i++) {
+          weightedStatuses.push(entry.status);
+        }
+      });
+      
+      // Randomly pick a status based on the weighted distribution
+      tagStatus = faker.helpers.arrayElement(weightedStatuses);
+      
       
       // Set the precise 'from' and 'to' dates
       const fromDate = new Date('2015-01-01T00:00:00.000Z');
@@ -96,8 +116,15 @@ export const generateRandomClientEmails = async (count = 10) => {
         id: uuidv4(),
         accountId: faker.helpers.arrayElement(accountIds), // Assign a random accountId from the list
         email: faker.internet.email(), // Generate a random email address
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+        country: faker.location.country(),
+        city: faker.location.city(),
+        address: faker.location.street(),
+        zipCode: faker.location.zipCode(),
         unsubscribed,
         unsubscribedReason, // Conditionally assign reason
+        tagStatus,
         createdAt,
         updatedAt
       };

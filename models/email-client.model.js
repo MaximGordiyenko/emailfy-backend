@@ -22,6 +22,40 @@ export const EmailClient = sequelize.define('EmailClient', {
     allowNull: false,
     unique: true,
   },
+  firstName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: false,
+  },
+  lastName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: false,
+  },
+  country: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: false,
+  },
+  city: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: false,
+  },
+  address: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: false,
+  },
+  zipCode: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: false,
+  },
+  unsubscribed: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
   unsubscribedReason: {
     type: DataTypes.ENUM(
       'Irrelevant content',
@@ -32,8 +66,13 @@ export const EmailClient = sequelize.define('EmailClient', {
     ),
     allowNull: true, // Allow null for non-unsubscribed clients
   },
-  unsubscribed: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
+  tagStatus: {
+    type: DataTypes.ENUM(
+      'passive',
+      'active',
+      'block',
+      'wait',
+    ),
+    allowNull: false,
   },
 });
