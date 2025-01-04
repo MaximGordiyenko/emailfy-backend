@@ -183,7 +183,6 @@ export const getCampaignStatisticsByEmailID = async (req, res) => {
 export const getClientEmails = async (req, res) => {
   try {
     const { user } = req;
-    // await new Promise(resolve => setTimeout(resolve, 2000));
     
     const emailsOfClientsData = await EmailClient.findAll({
       where: { accountId: user.id }

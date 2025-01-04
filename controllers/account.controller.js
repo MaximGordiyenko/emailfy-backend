@@ -21,10 +21,10 @@ export const signUpAccount = async (req, res) => {
       email,
       password: hashedPassword
     });
-
+    
     res.status(201).json({
       message: "User registered successfully",
-      accountId: savedUser.id,
+      accountId: savedUser.id
     });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
@@ -87,7 +87,7 @@ export const authRefreshToken = async (req, res) => {
       
       res.status(200).json({
         message: 'New accessToken & refreshToken provided',
-        accessToken: newAccessToken ,
+        accessToken: newAccessToken,
         refreshToken: newRefreshToken
       });
     });
@@ -120,6 +120,44 @@ export const getAccountInformation = async (req, res) => {
     const isExistUser = await Account.findByPk(decoded.id);
     
     res.status(200).json(isExistUser);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getAccountStatus = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    const decoded = jwt.decode(token);
+    
+    const account = await Account.findOne({
+      where: { id: decoded.id }
+    });
+    
+    console.log('The account is:.', account);
+    
+    res.status(200).json(account);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getAudienceStatus = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    const decoded = jwt.decode(token);
+    
+    const account = await Account.findOne({
+      where: { id: decoded.id }
+    });
+    
+    console.log('The account is:.', account);
+    
+    res.status(200).json(account);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -5,7 +5,9 @@ import {
   signInAccount,
   authRefreshToken,
   authLogout,
-  getAccountInformation
+  getAccountInformation,
+  getAccountStatus,
+  getAudienceStatus,
 } from '../controllers/account.controller.js';
 
 const router = express.Router();
@@ -16,5 +18,7 @@ router.post('/refresh', authRefreshToken);
 router.post('/logout', authLogout);
 
 router.get('/auth/account-info', authenticateToken, getAccountInformation);
+router.get('/auth/account-status', authenticateToken, getAccountStatus);
+router.get('/auth/audience-status', authenticateToken, getAudienceStatus);
 
 export default router;

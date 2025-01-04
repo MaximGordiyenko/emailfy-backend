@@ -14,6 +14,14 @@ import { modelAssociations } from './models/modelAssociations.js';
 import authRoutes from './routes/account.js';
 import dashboardRoutes from './routes/dashboard.js';
 import settingsRoutes from './routes/settings.js';
+import tagRoutes from './routes/tag.js';
+
+import {
+  generateRandomClientEmails,
+  generateRandomCampaigns,
+  generateRandomAccounts,
+  generateRandomSentEmailsStatistic
+} from './helpers/seeds.js';
 
 import {
   generateRandomClientEmails,
@@ -38,6 +46,7 @@ app.use(cookieParser());
 
 app.use('/api', authRoutes);
 app.use('/api', dashboardRoutes);
+app.use('/api', tagRoutes);
 app.use('/api', settingsRoutes);
 
 const initializeApp = async () => {
