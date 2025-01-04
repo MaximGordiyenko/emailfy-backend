@@ -63,7 +63,7 @@ const initializeApp = async () => {
     
     // await generateRandomClientEmails(2000);
     // await generateRandomCampaigns(2000);
-    await generateRandomSentEmailsStatistic();
+    // await generateRandomSentEmailsStatistic();
     
     const PORT = process.env.SERVER_PORT || 4001;
     app.listen(PORT, () => {
