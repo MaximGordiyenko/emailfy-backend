@@ -6,6 +6,7 @@ import { Account } from '../models/account.model.js';
 import { Campaign } from '../models/campaign.model.js';
 import { SentEmailsStatistic } from '../models/sentEmailStatistics.model.js';
 import bcrypt from 'bcrypt';
+import { AudienceGroup } from '../models/audience-group.model.js';
 
 export const generateRandomAccounts = async (count = 10) => {
   try {
@@ -233,5 +234,53 @@ export const generateRandomSentEmailsStatistic = async () => {
     console.log(`Generated email statistics for ${statisticsData.length} email-campaign combinations.`);
   } catch (error) {
     console.error('Error generating random email statistics:', error);
+  }
+};
+
+export const generateRandomAudienceGroups = async () => {
+  const emailClients = await EmailClient.findAll({
+    include: [
+      {
+        model: Account,
+        attributes: ['id']
+      }
+    ]
+  });
+  
+  // Randomly select a subset of email clients
+  const selectedClients = faker.helpers.shuffle(emailClients).slice(0, faker.number.int({
+    min: 1,
+    max: emailClients.length
+  }));
+  
+  // Count emails per account
+  const accountEmailCounts = {};
+  
+  selectedClients.forEach((client) => {
+    const accountId = client.Account.id;
+    if (!accountEmailCounts[accountId]) {
+      accountEmailCounts[accountId] = 0;
+    }
+    accountEmailCounts[accountId] += 1;
+  });
+  
+  // Create AudienceGroup entries
+  for (const accountId in accountEmailCounts) {
+    const createdDate = faker.date.past();
+    const modifiedDate = faker.date.between({
+      from: createdDate,
+      to: new Date()
+    });
+    
+    await AudienceGroup.create({
+      id: uuidv4(),
+      name: faker.lorem.word(),
+      contacts: accountEmailCounts[accountId],
+      segments: faker.number.int({ min: 1, max: 5 }),
+      created: createdDate,
+      modified: modifiedDate
+    }, {
+      timestamps: false // Disable automatic management of timestamps
+    });
   }
 };

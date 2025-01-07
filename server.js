@@ -13,6 +13,7 @@ import { modelAssociations } from './models/modelAssociations.js';
 
 import authRoutes from './routes/account.js';
 import dashboardRoutes from './routes/dashboard.js';
+import audienceRoutes from './routes/audience.js';
 import settingsRoutes from './routes/settings.js';
 import tagRoutes from './routes/tag.js';
 
@@ -20,14 +21,8 @@ import {
   generateRandomClientEmails,
   generateRandomCampaigns,
   generateRandomAccounts,
-  generateRandomSentEmailsStatistic
-} from './helpers/seeds.js';
-
-import {
-  generateRandomClientEmails,
-  generateRandomCampaigns,
-  generateRandomAccounts,
-  generateRandomSentEmailsStatistic
+  generateRandomSentEmailsStatistic,
+  generateRandomAudienceGroups,
 } from './helpers/seeds.js';
 
 const app = express();
@@ -46,6 +41,7 @@ app.use(cookieParser());
 
 app.use('/api', authRoutes);
 app.use('/api', dashboardRoutes);
+app.use('/api', audienceRoutes);
 app.use('/api', tagRoutes);
 app.use('/api', settingsRoutes);
 
@@ -71,6 +67,7 @@ const initializeApp = async () => {
     // await generateRandomClientEmails(2000);
     // await generateRandomCampaigns(2000);
     // await generateRandomSentEmailsStatistic();
+    // await generateRandomAudienceGroups();
     
     const PORT = process.env.SERVER_PORT || 4001;
     app.listen(PORT, () => {
