@@ -5,11 +5,12 @@ dotenv.config();
 
 export const getAIResponse = async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, modelType } = req.body;
     console.log(message);
     if (!message) return res.status(400).json({ error: "Message is required" });
+    console.log('model:', modelType);
     
-    const response = await getGeminiResponse(message);
+    const response = await getGeminiResponse(message, modelType || "gemini-pro");
     res.json(response);
   } catch (error) {
     console.error("AI Error:", error);
