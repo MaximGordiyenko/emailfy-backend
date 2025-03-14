@@ -14,6 +14,7 @@ import { modelAssociations } from './models/modelAssociations.js';
 import authRoutes from './routes/account.js';
 import dashboardRoutes from './routes/dashboard.js';
 import audienceRoutes from './routes/audience.js';
+import campaignsRoutes from './routes/campaigns.js';
 import settingsRoutes from './routes/settings.js';
 import tagRoutes from './routes/tag.js';
 
@@ -42,6 +43,7 @@ app.use(cookieParser());
 app.use('/api', authRoutes);
 app.use('/api', dashboardRoutes);
 app.use('/api', audienceRoutes);
+app.use('/api', campaignsRoutes);
 app.use('/api', tagRoutes);
 app.use('/api', settingsRoutes);
 
