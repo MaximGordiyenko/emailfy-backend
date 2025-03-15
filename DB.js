@@ -1,25 +1,55 @@
 import { Sequelize } from "sequelize";
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config();
 
-export const sequelize = new Sequelize(process.env.PSQL_NAME, process.env.PSQL_USER, process.env.PSQL_PASSWORD, {
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  dialect: 'postgres',
+// Define common options
+const commonOptions = {
+  dialect: "postgres",
   logging: false,
   pool: {
     max: 5,
     min: 0,
     acquire: 30000,
-    idle: 10000
-  }
+    idle: 10000,
+  },
+};
+
+// Check if running in a production environment (Render)
+const isProduction = process.env.NODE_ENV === "production";
+console.log(`Running in ${isProduction ? "Production" : "Development"} mode`);
+
+// Use DATABASE_URL in production (Render) or local env variables for development
+const connectionString = isProduction
+  ? process.env.PSQL_URL?.trim()
+  : `postgres://${process.env.PSQL_USER}:${process.env.PSQL_PASSWORD}@${process.env.PSQL_HOST}:${process.env.PSQL_PORT}/${process.env.PSQL_NAME}`;
+
+if (!connectionString) {
+  throw new Error("Database connection string is undefined. Check environment variables.");
+}
+
+export const sequelize = new Sequelize(connectionString, {
+  ...commonOptions,
+  dialectOptions: isProduction
+    ? {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false, // Required for Render's PostgreSQL
+      },
+    }
+    : {},
 });
 
 export const createDatabase = async () => {
-  const sequelize = new Sequelize('postgres', process.env.PSQL_USER, process.env.PSQL_PASSWORD, {
-    host: process.env.PSQL_HOST,
-    port: process.env.PSQL_PORT,
-    dialect: 'postgres',
-    logging: false
+  const sequelize = new Sequelize(connectionString, {
+    ...commonOptions,
+    dialectOptions: isProduction
+      ? {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false, // Required for Render's PostgreSQL
+        },
+      }
+      : {},
   });
   
   try {
