@@ -124,17 +124,7 @@ export const generateClientEmails = async (req, res) => {
     const decoded = jwt.decode(token);
     const account = await Account.findByPk(decoded.id);
     
-    // Generate test data if requested (only in development)
-    if (process.env.NODE_ENV === 'development') {
-      try {
-        await generateRandomClientEmails(2, account.id);
-        
-        console.log(`Test data generated for account ${account.id}`);
-      } catch (seedError) {
-        console.error('Error generating test data:', seedError);
-        // Continue with signup success, just log the seeding error
-      }
-    }
+    await generateRandomClientEmails(2, account.id);
     
     res.status(200).json({
       message: 'generate Client Emails',
@@ -152,17 +142,7 @@ export const generateEmailCampaigns = async (req, res) => {
     const decoded = jwt.decode(token);
     const account = await Account.findByPk(decoded.id);
     
-    // Generate test data if requested (only in development)
-    if (process.env.NODE_ENV === 'development') {
-      try {
-        await generateRandomCampaigns(2000, account.id);
-        
-        console.log(`Test data generated for account ${account.id}`);
-      } catch (seedError) {
-        console.error('Error generating test data:', seedError);
-        // Continue with signup success, just log the seeding error
-      }
-    }
+    await generateRandomCampaigns(2000, account.id);
     
     res.status(200).json({
       message: 'generate Campaigns',
@@ -180,17 +160,7 @@ export const generateEmailsStatistic = async (req, res) => {
     const decoded = jwt.decode(token);
     const account = await Account.findByPk(decoded.id);
     
-    // Generate test data if requested (only in development)
-    if (process.env.NODE_ENV === 'development') {
-      try {
-        await generateRandomSentEmailsStatistic(account.id);
-        
-        console.log(`Test data generated for account ${account.id}`);
-      } catch (seedError) {
-        console.error('Error generating test data:', seedError);
-        // Continue with signup success, just log the seeding error
-      }
-    }
+    await generateRandomSentEmailsStatistic(account.id);
     
     res.status(200).json({
       message: 'generate Emails Statistic',
