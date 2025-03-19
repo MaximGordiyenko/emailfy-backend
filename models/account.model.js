@@ -10,6 +10,7 @@ export const Account = sequelize.define('Account', {
   name: {
     type: DataTypes.STRING,
     allowNull: true,
+    defaultValue: 'none'
   },
   description: {
     type: DataTypes.STRING,

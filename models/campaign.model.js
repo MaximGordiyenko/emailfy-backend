@@ -23,7 +23,8 @@ export const Campaign = sequelize.define('Campaign', {
   },
   senderName: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    defaultValue: 'none'
   },
   content: {
     type: DataTypes.STRING,

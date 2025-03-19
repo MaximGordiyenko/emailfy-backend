@@ -7,6 +7,7 @@ import { Campaign } from '../models/campaign.model.js';
 import { SentEmailsStatistic } from '../models/sentEmailStatistics.model.js';
 import bcrypt from 'bcrypt';
 import { AudienceGroup } from '../models/audience-group.model.js';
+import { extractBeforeAt } from './general.js';
 
 export const generateRandomAccounts = async (count = 10) => {
   try {
@@ -140,7 +141,7 @@ export const generateRandomCampaigns = async (count = 10, id) => {
       include: [
         {
           model: Account,
-          attributes: ['id', 'name']
+          attributes: ['id', 'name', 'email']
         }
       ],
       where: {
@@ -162,12 +163,12 @@ export const generateRandomCampaigns = async (count = 10, id) => {
         from: campaignCreatedAt,
         to: new Date()
       });
-      
+
       return {
         id: uuidv4(),
         emailId: emailClient.id, // Ensure the emailId matches an existing EmailClient.id
         subject: faker.lorem.sentence(),
-        senderName: emailClient.Account.name, // Use the associated Account name as senderName
+        senderName: extractBeforeAt(emailClient.Account.email), // Use the associated Account name as senderName
         content: faker.lorem.paragraph(),
         createdAt: campaignCreatedAt,
         updatedAt: campaignUpdatedAt
