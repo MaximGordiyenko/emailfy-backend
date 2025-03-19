@@ -24,7 +24,7 @@ export const signUpAccount = async (req, res) => {
     
     res.status(201).json({
       message: "User registered successfully",
-      accountId: savedUser.id
+      accountId: savedUser.id,
     });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });

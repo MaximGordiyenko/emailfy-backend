@@ -36,20 +36,10 @@ export const generateRandomAccounts = async (count = 10) => {
   }
 };
 
-export const generateRandomClientEmails = async (count = 10) => {
+export const generateRandomClientEmails = async (count = 10, id) => {
   try {
     // Ensure the database is synced
     await sequelize.sync({ force: false });
-    
-    // Fetch all accounts from the database
-    const accounts = await Account.findAll();
-    
-    if (!accounts.length) {
-      console.log('No accounts found in the database.');
-      return;
-    }
-    
-    const accountIds = accounts.map((account) => account.id);
     
     // Define unsubscribe reasons and their corresponding probabilities
     const unsubscribeReasons = [
@@ -108,14 +98,15 @@ export const generateRandomClientEmails = async (count = 10) => {
         from: fromDate,   // Set the `from` date to `createdAt`
         to: toDate     // Set the `to` date to the current date
       });
+      
       const updatedAt = faker.date.between({
         from: createdAt,   // Set the `from` date to `createdAt`
         to: new Date()     // Set the `to` date to the current date
       });
-      
+
       return {
         id: uuidv4(),
-        accountId: faker.helpers.arrayElement(accountIds), // Assign a random accountId from the list
+        accountId: id, // Assign a random accountId from the list
         email: faker.internet.email(), // Generate a random email address
         firstName: faker.person.firstName(),
         lastName: faker.person.lastName(),
@@ -140,23 +131,26 @@ export const generateRandomClientEmails = async (count = 10) => {
   }
 };
 
-export const generateRandomCampaigns = async (count = 10) => {
+export const generateRandomCampaigns = async (count = 10, id) => {
   try {
     await sequelize.sync({ force: false }); // Ensure the database is synced
     
     // Fetch all EmailClients along with their associated Account
-    const emailClients = await EmailClient.findAll({
+    const accountEmail = await EmailClient.findAll({
       include: [
         {
           model: Account,
           attributes: ['id', 'name']
         }
-      ]
+      ],
+      where: {
+        accountId: id
+      }
     });
     
     const campaignsData = Array.from({ length: count }).map(() => {
       // Randomly select an EmailClient
-      const emailClient = faker.helpers.arrayElement(emailClients);
+      const emailClient = faker.helpers.arrayElement(accountEmail);
       
       // Ensure createdAt and updatedAt for the campaign are not later than the associated EmailClient's createdAt
       const emailClientCreatedAt = emailClient.createdAt;
@@ -189,12 +183,13 @@ export const generateRandomCampaigns = async (count = 10) => {
   }
 };
 
-export const generateRandomSentEmailsStatistic = async () => {
+export const generateRandomSentEmailsStatistic = async (id) => {
   try {
     await sequelize.sync({ force: false }); // Ensure the database is synced
     
     // Fetch all EmailClients
     const emails = await EmailClient.findAll({
+      where: { accountId: id },
       attributes: ['id', 'createdAt', 'updatedAt'],
       include: [{ model: Campaign, attributes: ['id'] }]
     });

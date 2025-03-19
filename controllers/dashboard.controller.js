@@ -229,7 +229,7 @@ export const getTotalUnsubscribedEmailStatistic = async (req, res) => {
       return acc;
     }, { ...initValue }); // Clone initValue to avoid mutation
     
-    console.log(JSON.stringify(emailsOfClientsData, null, 2));
+    // console.log(JSON.stringify(emailsOfClientsData, null, 2));
     
     res.status(200).json(statistics);
   } catch (error) {

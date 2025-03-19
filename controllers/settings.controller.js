@@ -6,6 +6,11 @@ import { s3Client } from '../config/s3.js';
 import { Image } from '../models/image.model.js';
 import { Account } from '../models/account.model.js';
 import axios from 'axios';
+import {
+  generateRandomClientEmails,
+  generateRandomCampaigns,
+  generateRandomSentEmailsStatistic, generateRandomAudienceGroups
+} from '../helpers/seeds.js';
 
 export const getCountries = async (req, res) => {
   try {
@@ -23,10 +28,9 @@ export const updateAccountInformation = async (req, res) => {
     const decoded = jwt.decode(token);
     
     const { email, currentPassword, newPassword, repeatNewPassword } = req.body;
-    console.log( email, currentPassword, newPassword, repeatNewPassword);
+    console.log(email, currentPassword, newPassword, repeatNewPassword);
     
     const isExistUser = await Account.findByPk(decoded.id);
-    console.log(isExistUser);
     
     res.status(200).json('ok');
   } catch (error) {
@@ -110,5 +114,89 @@ export const getProfileImage = async (req, res) => {
   } catch (err) {
     console.error('Error retrieving image:', err);
     res.status(500).json({ error: 'Error retrieving image' });
+  }
+};
+
+export const generateClientEmails = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    const decoded = jwt.decode(token);
+    const account = await Account.findByPk(decoded.id);
+    
+    // Generate test data if requested (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      try {
+        await generateRandomClientEmails(2, account.id);
+        
+        console.log(`Test data generated for account ${account.id}`);
+      } catch (seedError) {
+        console.error('Error generating test data:', seedError);
+        // Continue with signup success, just log the seeding error
+      }
+    }
+    
+    res.status(200).json({
+      message: 'generate Client Emails',
+      id: account.id
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const generateEmailCampaigns = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    const decoded = jwt.decode(token);
+    const account = await Account.findByPk(decoded.id);
+    
+    // Generate test data if requested (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      try {
+        await generateRandomCampaigns(2000, account.id);
+        
+        console.log(`Test data generated for account ${account.id}`);
+      } catch (seedError) {
+        console.error('Error generating test data:', seedError);
+        // Continue with signup success, just log the seeding error
+      }
+    }
+    
+    res.status(200).json({
+      message: 'generate Campaigns',
+      id: account.id
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const generateEmailsStatistic = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    const decoded = jwt.decode(token);
+    const account = await Account.findByPk(decoded.id);
+    
+    // Generate test data if requested (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      try {
+        await generateRandomSentEmailsStatistic(account.id);
+        
+        console.log(`Test data generated for account ${account.id}`);
+      } catch (seedError) {
+        console.error('Error generating test data:', seedError);
+        // Continue with signup success, just log the seeding error
+      }
+    }
+    
+    res.status(200).json({
+      message: 'generate Emails Statistic',
+      id: account.id
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
   }
 };
