@@ -1,4 +1,4 @@
-import { getGeminiResponse } from '../service/ai/gemini.service.js';
+import { getGeminiResponse } from '../service/gemini.service.js';
 import dotenv from "dotenv";
 
 dotenv.config();

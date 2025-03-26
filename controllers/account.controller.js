@@ -10,6 +10,7 @@ import { ApiError } from '../exeptions/api-error.js';
 export const signUpAccount = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(email, password);
     
     const existingUser = await Account.findOne({ where: { email } });
     if (existingUser) return res.status(400).json({ error: "Username already exists." });
@@ -27,6 +28,7 @@ export const signUpAccount = async (req, res) => {
       accountId: savedUser.id,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -35,7 +37,7 @@ export const signInAccount = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await Account.findOne({ where: { email } });
-    
+
     if (!user) return res.status(400).send("Invalid username or password.");
     
     const validPassword = await bcrypt.compare(password, user.password);

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { faker } from '@faker-js/faker';
-import { sequelize } from '../DB.js';
+import { sequelize } from '../config/db.js';
 import { EmailClient } from '../models/email-client.model.js';
 import { Account } from '../models/account.model.js';
 import { Campaign } from '../models/campaign.model.js';

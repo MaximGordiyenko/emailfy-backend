@@ -1,5 +1,5 @@
 import { DataTypes } from 'sequelize';
-import { sequelize } from '../DB.js';
+import { sequelize } from '../config/db.js';
 import { EmailClient } from './email-client.model.js';
 
 export const Campaign = sequelize.define('Campaign', {
