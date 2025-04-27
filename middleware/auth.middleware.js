@@ -27,15 +27,12 @@ export const authenticateToken = (req, res, next) => {
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) {
       if (err.name === 'TokenExpiredError') {
-        console.log(err.name);
         return res.status(403).json({ error: 'Token expired' });
       }
       return res.status(403).json({ error: 'Failed to authenticate token' });
     }
     
     req.user = user;
-    console.log('Authenticated user:', user);
-    
     next();
   });
 };
