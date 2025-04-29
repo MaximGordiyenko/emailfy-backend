@@ -19,7 +19,7 @@ COPY . .
 # Inform Docker that the container listens on the specified network port at runtime.
 # EXPOSE does not actually publish the port, but acts as documentation
 # Replace 3000 with the port your Node.js app listens on (matching the PORT env var default)
-EXPOSE 4001
+EXPOSE 3000
 
 # Define the command to run your application when the container starts
 # Use the command you would run locally to start your server
