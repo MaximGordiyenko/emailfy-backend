@@ -1,0 +1,9 @@
+node_modules
+npm-debug.log
+yarn-error.log
+.git
+.gitignore
+.env # IMPORTANT: Do not copy your local .env file with secrets!
+Dockerfile
+fly.toml # We'll create this later
+.dockerignore
