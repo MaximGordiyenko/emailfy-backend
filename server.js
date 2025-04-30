@@ -8,7 +8,6 @@ import { corsOptions } from "./config/corsOptions.js";
 
 import { credentials } from "./middleware/credential.middleware.js";
 
-// import { createDatabase, sequelize } from './DB.js';
 import { modelAssociations } from './models/modelAssociations.js';
 
 import authRoutes from './routes/account.js';
