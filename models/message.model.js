@@ -5,20 +5,18 @@ export const Message = sequelize.define('Message', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
+    primaryKey: true,
   },
-  content: {
+  sessionId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+  },
+  fromRole: {
+    type: DataTypes.ENUM('user', 'admin'),
+    allowNull: false,
+  },
+  message: {
     type: DataTypes.TEXT,
-    allowNull: false
+    allowNull: false,
   },
-  source: {
-    type: DataTypes.ENUM('website', 'telegram'),
-    allowNull: false
-  },
-  timestamp: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  }
-}, {
-  timestamps: true
 });

@@ -5,7 +5,6 @@ import { EmailClient } from './email-client.model.js';
 import { Campaign } from './campaign.model.js';
 import { SentEmailsStatistic } from './sentEmailStatistics.model.js';
 import { Chat } from './chat.model.js';
-import { Message } from './message.model.js';
 
 export const modelAssociations = () => {
   // Account and Related Models
@@ -29,7 +28,6 @@ export const modelAssociations = () => {
   Campaign.hasMany(SentEmailsStatistic, { foreignKey: 'campaignId' }); // Allow multiple stats per campaign
   SentEmailsStatistic.belongsTo(Campaign, { foreignKey: 'campaignId' });
   
-  // WebSocket Chat & Message associations
-  Message.belongsTo(Chat, { foreignKey: 'chatId' });
-  Chat.hasMany(Message, { foreignKey: 'chatId' });
+  Account.hasMany(Chat, { foreignKey: 'accountId' });
+  Chat.belongsTo(Account, { foreignKey: 'accountId' });
 };
