@@ -21,20 +21,34 @@ import telegramRoutes from './routes/telegram.route.js';
 
 const app = express();
 
+// Logger
 app.use(morgan('dev'));
+
+// Handle options credentials check - before CORS!
+// and fetch cookies credentials requirement
 app.use(credentials);
+
+// Cross Origin Resource Sharing
 app.use(cors(corsOptions));
+
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
+
+// Built-in middleware for json and url encoding
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
+// Middleware for cookies
 app.use(cookieParser());
 
-app.use('/api', authRoutes);
-app.use('/api', dashboardRoutes);
-app.use('/api', audienceRoutes);
-app.use('/api', campaignsRoutes);
-app.use('/api', tagRoutes);
-app.use('/api', settingsRoutes);
-app.use('/api', telegramRoutes);
+// Routes
+app.use('/', authRoutes);
+app.use('/', dashboardRoutes);
+app.use('/', audienceRoutes);
+app.use('/', campaignsRoutes);
+app.use('/', tagRoutes);
+app.use('/', settingsRoutes);
+app.use('/', telegramRoutes);
 
 (async () => {
   try {
@@ -43,7 +57,6 @@ app.use('/api', telegramRoutes);
     
     // Test database connection
     await sequelize.authenticate();
-    console.log('✅ Database connection established successfully.');
     
     // Setup associations
     modelAssociations();

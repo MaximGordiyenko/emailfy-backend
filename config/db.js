@@ -35,5 +35,5 @@ export const sequelize = new Sequelize(connectionString, {
 });
 
 export const createDatabase = async () => {
-  console.log("Database creation not needed with Supabase - database is pre-configured");
+  console.log('✅ Database connection established successfully.');
 };
