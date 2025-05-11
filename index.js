@@ -41,6 +41,10 @@ app.use(express.json());
 // Middleware for cookies
 app.use(cookieParser());
 
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Hello from Railway backend!' });
+});
+
 // Routes
 app.use('/', authRoutes);
 app.use('/', dashboardRoutes);
