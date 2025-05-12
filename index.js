@@ -1,7 +1,7 @@
 import express from 'express';
-import morgan from "morgan";
 import cors from 'cors';
 import cookieParser from "cookie-parser";
+import pino from 'pino';
 
 import { corsOptions } from "./config/corsOptions.js";
 import { credentials } from "./middleware/credential.middleware.js";
@@ -22,7 +22,7 @@ import telegramRoutes from './routes/telegram.route.js';
 const app = express();
 
 // Logger
-app.use(morgan('dev'));
+const logger = pino();
 
 // Handle options credentials check - before CORS!
 // and fetch cookies credentials requirement
@@ -40,11 +40,6 @@ app.use(express.json());
 
 // Middleware for cookies
 app.use(cookieParser());
-
-app.use((req, res, next) => {
-  console.log('Incoming origin:', req.headers.origin);
-  next();
-});
 
 // Routes
 app.use('/', authRoutes);
@@ -68,12 +63,15 @@ app.use('/', telegramRoutes);
     
     // Sync all models use { force: true } to drop and recreate tables
     await sequelize.sync({ alter: true });
-    console.log('✅ Database synced successfully.');
     
     const PORT = process.env.SERVER_PORT || 4001;
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    app.listen(PORT, () => {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.info('Server started');
+      }
+    });
   } catch (error) {
-    console.error('❌ Unable to start application:', error);
+    logger.error({ error }, '❌ Unable to start application');
     process.exit(1);
   }
 })();
