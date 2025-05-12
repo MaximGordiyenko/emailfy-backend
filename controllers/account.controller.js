@@ -5,7 +5,6 @@ import { Account } from '../models/account.model.js';
 import { Token } from '../models/token.model.js';
 
 import { generateAccessToken, generateRefreshToken } from '../middleware/auth.middleware.js';
-import { ApiError } from '../exeptions/api-error.js';
 
 export const signUpAccount = async (req, res) => {
   try {
@@ -36,6 +35,8 @@ export const signUpAccount = async (req, res) => {
 export const signInAccount = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log('Login attempt:', email);
+
     const user = await Account.findOne({ where: { email } });
 
     if (!user) return res.status(400).send("Invalid username or password.");
@@ -51,13 +52,14 @@ export const signInAccount = async (req, res) => {
     await Token.create({ token: refreshToken, accountId: user.id });
     
     res.status(200).json({
-      message: "User registered successfully",
-      accessToken: accessToken,
-      refreshToken: refreshToken
+      message: "Login successful",
+      accessToken,
+      refreshToken
     });
     
   } catch (error) {
-    res.status(500).json(ApiError.BadRequest('Authentication failed', [error.message]));
+    console.error("Login error:", error);
+    res.status(500).json({ error: "Internal server error", message: error.message });
   }
 };
 
