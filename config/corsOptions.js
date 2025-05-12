@@ -11,7 +11,7 @@ export const corsOptions = {
     }
   },
   optionsSuccessStatus: 200,
-  credentials: false, // Allow cookies to be sent with requests
+  credentials: true, // Allow cookies to be sent with requests
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 };
