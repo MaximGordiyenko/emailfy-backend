@@ -1,6 +1,12 @@
 import { Sequelize } from "sequelize";
 import dotenv from 'dotenv';
+import pino from 'pino';
+
+//.env file
 dotenv.config();
+
+// Logger
+const logger = pino();
 
 // Check for required environment variable
 const connectionString = process.env.DATABASE_URL;
@@ -12,6 +18,7 @@ if (!connectionString) {
 // Log connection string format (without sensitive data)
 const maskedConnectionString = connectionString.replace(/:[^@]+@/, ':****@');
 console.log('📡 Attempting to connect to:', maskedConnectionString);
+logger.info('✅ Database connection successfully.');
 
 const commonOptions = {
   dialect: "postgres",
@@ -35,5 +42,5 @@ export const sequelize = new Sequelize(connectionString, {
 });
 
 export const createDatabase = async () => {
-  console.log('✅ Database connection established successfully.');
+  logger.info('✅ Database connection successfully.');
 };
