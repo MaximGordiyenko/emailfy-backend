@@ -4,10 +4,11 @@ import cookieParser from "cookie-parser";
 import pino from 'pino';
 
 import { corsOptions } from "./config/corsOptions.js";
-import { credentials } from "./middleware/credential.middleware.js";
-
 import { createDatabase, sequelize } from './config/db.js';
+
+import { credentials } from "./middleware/credential.middleware.js";
 import { modelAssociations } from './models/modelAssociations.js';
+import { registerTelegramWebhook } from './services/telegram.service.js';
 
 import 'dotenv/config';
 
@@ -52,6 +53,9 @@ app.use('/', telegramRoutes);
 
 (async () => {
   try {
+    // Register the Telegram webhook
+    await registerTelegramWebhook();
+    
     // Create database if it doesn't exist
     await createDatabase();
     
