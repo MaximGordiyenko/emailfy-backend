@@ -19,7 +19,7 @@ export const postMessage = async (req, res) => {
     
     res.sendStatus(200);
   } catch (error) {
-    res.status().send(error);
+    res.status(500).send(error);
   }
 }
 
@@ -37,7 +37,7 @@ export const getMessage = async (req, res) => {
     console.log(messages);
     res.json(messages);
   } catch (error) {
-    res.status().send(error);
+    res.status(500).send(error);
   }
 }
 
